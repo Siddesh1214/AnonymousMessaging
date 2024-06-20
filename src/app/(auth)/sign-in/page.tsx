@@ -106,7 +106,7 @@ function Page() {
 										Please wait
 									</>
 								) : (
-									<>SignIp</>
+									<>SignIn</>
 								)}
 							</Button>
 						</form>

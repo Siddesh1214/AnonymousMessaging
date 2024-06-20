@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   await dbConnect();
   const session = await getServerSession(authOptions);
   const user: User = session?.user as User;
-  console.log('session?.expires',session?.expires);
+  console.log('session?.expires',session);
 
   if (!session || !session.user) {
     return Response.json({
@@ -19,16 +19,29 @@ export async function GET(request: Request) {
   }
 
   const userId = new mongoose.Types.ObjectId(user._id);
+  console.log("userId", userId);
 
   try {
-    const user = await UserModel.aggregate([
-      {$match:{id:userId}},
-      { $unwind: '$messages' },
-      {$sort:{'messages.createdAt':-1}},
-      {$group:{_id:'$_id',messages:{$push:'$messages'}}},
-    ])
 
-    if (!user || user.length === 0) {
+    const userExists = await UserModel.findOne({ _id: userId }).lean();
+    console.log("User Exists:", userExists);
+
+    // const user = await UserModel.aggregate([
+    //   { $match: { _id: userId } },
+    //   { $unwind: '$messages' },
+    //   { $sort: { 'messages.createdAt': -1 } },
+    //   { $group: { _id: '$_id', messages: { $push: '$messages' } } },
+    // ]).exec();
+    // console.log("Aggregated User Data:", user);
+
+
+    // if (!user || user.length === 0) {
+    //   return Response.json({
+    //     success: false,
+    //     message: "User not found"
+    //   },{status:401})
+    // }
+    if (!user) {
       return Response.json({
         success: false,
         message: "User not found"
@@ -39,7 +52,7 @@ export async function GET(request: Request) {
     return Response.json({
       success: true,
       message:'success in fetching messages',
-      messages: user[0].messages
+      messages: userExists?.messages
     },{status:200})
 
   } catch (error) {

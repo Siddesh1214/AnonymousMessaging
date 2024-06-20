@@ -25,7 +25,7 @@ export async function sendVerificationEmail(email: string, username: string, ver
       from: 'Anonmyous Messaging',
       to: `${email}`,
       subject: 'Anonymous | Verification Code',
-      // html: emailHtml,
+      html: emailHtml,
       react:VerificationEmail({ username: username, otp: verifyCode }),
     };
 
@@ -68,63 +68,3 @@ export async function sendVerificationEmail(email: string, username: string, ver
 
 
 
-
-
-// ------------------------------------
-export async function sendVerificationEmail2(email: string, username: string, verifyCode: string){
-  try {
-    let transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-      }
-    })
-
-    let info = await transporter.sendMail({
-      from:"Study Notion",
-      to:`${email}`,
-      subject: 'Anonymous | Verification Code',
-      html: `${otpTemplate(verifyCode)}`,
-      
-    })
-
-    console.log(info);
-    return info;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-// module.exports = sendVerificationEmail;
-
-
-
-
-// ----------------------------------------
-import { Resend } from 'resend';
-
-export async function sendVerificationEmail1(
-  email: string,
-  username: string,
-  verifyCode: string
-): Promise<ApiResponse> {
-  const resend = new Resend('re_NxBJHsxo_TNmHWinG39Nhiin3eAgrRSLA');
-
-  try {
-    const response=await resend.emails.send({
-      from: 'Anonmyous Messaging',
-      to: email,
-      subject: 'Mystery Message Verification Code',
-      react: VerificationEmail({ username, otp: verifyCode }),
-    });
-    console.log('response ', response);
-    return { success: true, message: 'Verification email sent successfully.' };
-  } catch (emailError) {
-    console.error('Error sending verification email:', emailError);
-    return { success: false, message: 'Failed to send verification email.' };
-  }
-}
-
-
-// import nodemailer from 'nodemailer';

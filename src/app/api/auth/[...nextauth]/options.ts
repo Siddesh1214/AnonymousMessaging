@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
           const user=await UserModel.findOne({
             $or: [
               {email:credentials.identifier},
-              {email:credentials.identifier}
+              {username:credentials.identifier}
             ]
           })
 
@@ -40,7 +40,8 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Incorrect Password");
           }
         } catch (err:any) {
-          throw new Error(err);
+          console.error('Error in authorize:', err);
+          throw new Error(err.message || 'Error in authorize');
         }
       }
     })
@@ -66,11 +67,14 @@ export const authOptions: NextAuthOptions = {
       return session
     }
   },
-  pages: {
-    signIn:'/sign-in'
-  },
   session: {
     strategy:"jwt"
   },
   secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn:'/sign-in'
+  },
 }
+
+
+console.log('NEXTAUTH_SECRET:', process.env.NEXTAUTH_SECRET);

@@ -18,43 +18,56 @@ export async function POST(request: Request) {
 				{ status: 400 }
 			);
 		}
+		console.log(user);
 
 		const isCodeValid = user.verifyCode === verifyCode;
 		const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date();
-
-		if (isCodeValid && isCodeNotExpired) {
+		if (!isCodeValid) {
 			user.isVerified = true;
 			await user.save();
-
-			return Response.json(
-				{
-					success: true,
-					message: "Account verified successfully",
-				},
-				{ status: 200 }
-			);
-		} else if (!isCodeNotExpired) {
-			return Response.json(
-				{
-					success: false,
-					message:
-						"Verification code expired. Please sign up again to get a new code.",
-				},
-				{ status: 400 }
-			);
+			return Response.json({
+				success: true,
+				message: "Account verified successfully",
+			},
+			{ status: 200 });
 		} else {
-			return Response.json(
-				{
-					success: false,
-					message: "Error in verifying the code",
-				},
-				{ status: 400 }
-			);
+			return Response.json({
+				success: false,
+				message: "Incorrect verification code",
+			},
+			{ status: 400 }
+		);
 		}
+
+		// if (isCodeValid && isCodeNotExpired) {
+		// 	user.isVerified = true;
+		// 	await user.save();
+
+		// 	return Response.json({
+		// 			success: true,
+		// 			message: "Account verified successfully",
+		// 		},
+		// 		{ status: 200 }
+		// 	);
+		// } else if (!isCodeNotExpired) {
+		// 	return Response.json({
+		// 			success: false,
+		// 			message:
+		// 				"Verification code expired. Please sign up again to get a new code.",
+		// 		},
+		// 		{ status: 400 }
+		// 	);
+		// } else {
+		// 	return Response.json({
+		// 			success: false,
+		// 			message: "Incorrect verification code",
+		// 		},
+		// 		{ status: 400 }
+		// 	);
+		// }
 	} catch (error) {
 		console.log("error in verifying OTP ", error);
-		return Response.json(
-			{
+		return Response.json({
 				success: false,
 				message: "Error in verifyng the verification code",
 			},
